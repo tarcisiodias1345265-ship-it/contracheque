@@ -1,0 +1,2377 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contracheque PM/BM - SD BM TARCÍSIO</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* DARK THEME (padrão) */
+            --bg-base: #09090b;
+            --bg-surface: rgba(24, 24, 27, 0.8);
+            --bg-input: rgba(39, 39, 42, 0.6);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 255, 255, 0.18);
+            --primary: #3b82f6;
+            --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            --success: #10b981;
+            --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-subtlest: #52525b;
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            --glow-primary: 0 0 20px rgba(59, 130, 246, 0.3);
+            --glow-success: 0 0 20px rgba(16, 185, 129, 0.3);
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --radius-sm: 6px;
+            
+            /* Backgrounds auxiliares */
+            --bg-section: rgba(0,0,0,0.1);
+            --bg-row: rgba(0,0,0,0.2);
+            --bg-input-focus: rgba(39, 39, 42, 0.8);
+            --bg-result: rgba(0,0,0,0.2);
+            --bg-extrato: rgba(0,0,0,0.25);
+            --bg-hover: rgba(255,255,255,0.03);
+            --header-bg: rgba(255,255,255,0.03);
+        }
+
+        /* MODO CLARO - Design mais leve e elegante (Perolado/Limpo) */
+        body.light {
+            --bg-base: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-input: #f1f5f9;
+            --border: rgba(0, 0, 0, 0.06);
+            --border-hover: rgba(0, 0, 0, 0.15);
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --text-subtlest: #94a3b8;
+            --glass-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+            
+            /* Backgrounds auxiliares modo claro (removendo os fundos cinzas) */
+            --bg-section: #ffffff;
+            --bg-row: transparent;
+            --bg-input-focus: #ffffff;
+            --bg-result: #ffffff;
+            --bg-extrato: #ffffff;
+            --bg-hover: rgba(0,0,0,0.03);
+            --header-bg: rgba(0,0,0,0.02);
+            
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(59,130,246,0.03) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(16,185,129,0.03) 0%, transparent 40%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding: 20px;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            background-attachment: fixed;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 10px;
+            grid-column: 1 / -1;
+            position: relative;
+        }
+
+        /* Toggle de tema */
+        .theme-toggle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .theme-toggle:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+            filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.5));
+        }
+        
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        /* Glassmorphism Cards */
+        .card {
+            background: var(--bg-surface);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            border: 1px solid var(--border);
+            box-shadow: var(--glass-shadow);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            border-color: var(--border-hover);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-base); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 10px;
+            justify-content: center;
+            grid-column: 1 / -1;
+        }
+
+        .tab-btn {
+            background: var(--bg-input);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            padding: 12px 28px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: rgba(255,255,255,0.05);
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+            box-shadow: var(--glow-primary);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* Grid das 3 seções lado a lado */
+        .sections-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        @media (min-width: 600px) {
+            .sections-grid {
+                grid-template-columns: repeat(3, 1fr);
+                align-items: start;
+            }
+        }
+        .sections-grid .section {
+            margin-bottom: 0;
+        }
+
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 15px;
+            flex-wrap: wrap;
+            background: var(--bg-row);
+            padding: 15px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"], input[type="number"], select {
+            background-color: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            outline: none;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+            background-color: var(--bg-input-focus);
+        }
+
+        /* Sections */
+        .section {
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: var(--bg-section);
+            transition: border-color 0.3s;
+        }
+        
+        .section:hover {
+            border-color: rgba(255,255,255,0.12);
+        }
+
+        .section-header {
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--border);
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+        }
+
+        .section-content {
+            padding: 15px 18px;
+        }
+
+        .item-row {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 12px;
+            gap: 5px;
+            transition: opacity 0.3s;
+        }
+        
+        .item-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .item-row span {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        .item-row input[type="text"] {
+            width: 100%;
+        }
+
+        .item-row input[type="number"] {
+            width: 100%;
+            text-align: right;
+            font-family: 'Inter', monospace;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text-main);
+        }
+
+        /* linha dinâmica: nome + valor lado a lado */
+        .dyn-item {
+            flex-direction: row;
+            align-items: center;
+            gap: 8px;
+        }
+        .dyn-item input[type="text"] {
+            flex: 1;
+            font-size: 0.85rem;
+        }
+        .dyn-item input[type="number"] {
+            width: 100px;
+            flex-shrink: 0;
+        }
+
+        /* Buttons */
+        .btn {
+            background-color: var(--bg-input);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn:hover {
+            background-color: var(--bg-hover);
+            border-color: var(--text-muted);
+        }
+
+        .btn-add {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            padding: 0;
+            line-height: 1;
+            font-weight: 300;
+        }
+        
+        body.light .btn-add { background: var(--bg-input); }
+
+        .btn-add:hover {
+            background: var(--primary);
+            color: white !important;
+            border-color: var(--primary);
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-remove {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: none;
+            padding: 0;
+            width: 38px;
+            height: 38px;
+            border-radius: var(--radius-sm);
+            box-shadow: none;
+        }
+        
+        .btn-remove:hover {
+            background-color: var(--danger);
+            color: white;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-primary {
+            background: var(--success-gradient);
+            color: white;
+            width: 100%;
+            padding: 16px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-top: 5px;
+            margin-bottom: 20px;
+            border-radius: var(--radius-md);
+            border: none;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--glow-success);
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(1px);
+        }
+
+        .btn-save {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            width: 100%;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-save:not(:disabled):hover {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+            box-shadow: var(--glow-primary);
+            transform: translateY(-2px);
+        }
+        
+        .btn-save:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: rgba(255,255,255,0.05);
+            color: var(--text-subtlest);
+            border-color: transparent;
+        }
+
+        /* Results Display */
+        .results-wrapper {
+            display: flex;
+            flex-direction: column;
+        }
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 700px) {
+            .results-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+
+
+        .result-card {
+            background: var(--bg-result);
+            border: 1px solid var(--border);
+            padding: 18px 15px;
+            border-radius: var(--radius-md);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: var(--text-muted);
+            opacity: 0.3;
+        }
+
+        .result-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .result-val {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-main);
+            font-family: 'Inter', monospace;
+            letter-spacing: -0.5px;
+        }
+
+        /* Variants for Results */
+        .result-card.danger::before { background: var(--danger); opacity: 1; }
+        .result-card.danger .result-val { color: #dc2626; }
+        body:not(.light) .result-card.danger .result-val { color: #fca5a5; }
+        
+        .result-card.warning::before { background: var(--warning); opacity: 1; }
+        .result-card.warning .result-val { color: #b45309; }
+        body:not(.light) .result-card.warning .result-val { color: #fcd34d; }
+        
+        .result-card.info::before { background: var(--primary); opacity: 1; }
+
+        .liquid-card {
+            background: var(--primary-gradient);
+            padding: 25px 20px;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            margin-bottom: 5px;
+            box-shadow: 0 10px 30px -5px rgba(59, 130, 246, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .liquid-card::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            animation: rotate 10s linear infinite;
+        }
+
+        .liquid-card .result-label {
+            color: rgba(255,255,255,0.9);
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            position: relative; z-index: 2;
+        }
+
+        .liquid-card .result-val {
+            font-size: 2.8rem;
+            color: white;
+            font-weight: 800;
+            position: relative; z-index: 2;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            letter-spacing: -1px;
+        }
+
+        /* Extrato */
+        .extrato {
+            background: var(--bg-extrato);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            margin-top: 20px;
+            font-size: 0.95rem;
+            display: none;
+            animation: slideUp 0.4s ease-out;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .extrato.visible {
+            display: block;
+        }
+        
+        .extrato-title {
+            text-align: center;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: var(--text-main);
+            border-bottom: 1px dashed var(--border);
+            padding-bottom: 15px;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .extrato-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            transition: background 0.2s;
+            border-radius: 4px;
+        }
+        .extrato-row:not(.extrato-liquid):hover {
+            background: var(--bg-hover);
+        }
+        .extrato-row span:last-child {
+            font-family: 'Inter', monospace;
+            font-weight: 600;
+        }
+        
+        .extrato-row.bold { font-weight: 700; font-size: 1.05rem; padding: 10px 0; }
+        .extrato-row.green { color: #059669; }
+        .extrato-row.red { color: #dc2626; }
+        .extrato-row.orange { color: #d97706; }
+        .extrato-row.gray { color: var(--text-muted); }
+        .extrato-liquid {
+            background: var(--primary-gradient) !important;
+            padding: 15px 20px;
+            border-radius: var(--radius-md);
+            margin-top: 15px;
+            font-size: 1.35rem !important;
+            color: white !important;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .extrato-liquid:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+        }
+        
+        /* Modo escuro: cores mais vivas no extrato */
+        body:not(.light) .extrato-row.green { color: #34d399; }
+        body:not(.light) .extrato-row.red { color: #f87171; }
+        body:not(.light) .extrato-row.orange { color: #fbbf24; }
+        
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 12px 0;
+        }
+
+        .info-box {
+            background: rgba(245, 158, 11, 0.05);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-left: 4px solid var(--warning);
+            padding: 12px 15px;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+        .info-box b { color: var(--text-main); }
+
+        /* Historico */
+        .history-item {
+            background: var(--bg-result);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        .history-item:hover {
+            background: var(--bg-hover);
+            border-color: var(--border-hover);
+            transform: translateX(5px);
+        }
+        .history-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .history-title {
+            font-weight: 800;
+            color: var(--text-main);
+            font-size: 1.25rem;
+        }
+        .history-val {
+            font-weight: 700;
+            font-size: 1.15rem;
+            font-family: 'Inter', monospace;
+        }
+        .history-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* Utility colors */
+        .border-green { border-color: rgba(16, 185, 129, 0.3); }
+        .border-gray { border-color: rgba(148, 163, 184, 0.2); }
+        .border-red { border-color: rgba(239, 68, 68, 0.3); }
+        .text-green { color: #34d399; }
+        .text-gray { color: #9ca3af; }
+        .text-red { color: #f87171; }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        /* ==========================
+           RESPONSIVIDADE iOS / Mobile
+           ========================== */
+        @media (max-width: 500px) {
+            body { padding: 12px; }
+            header h1 { font-size: 1.7rem; }
+            header p { font-size: 0.9rem; }
+            .theme-toggle { font-size: 0.75rem; padding: 6px 10px; top: 0; right: 0; }
+            .card { padding: 14px; }
+            .form-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .input-group { width: 100%; }
+            .input-group label[for='pdf-input'] { width: 100%; justify-content: center; }
+            .tab-btn { padding: 10px 16px; font-size: 0.85rem; }
+            .results-grid { grid-template-columns: 1fr 1fr; }
+            .btn-primary, .btn-save { font-size: 1rem; padding: 14px; }
+            .liquid-card .result-val { font-size: 2.2rem; }
+        }
+        @media (max-width: 380px) {
+            header h1 { font-size: 1.4rem; }
+            .tabs { gap: 6px; }
+            .tab-btn { padding: 9px 12px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Contracheque PM/BM</h1>
+        <p>Feito por SD BM TARCÍSIO</p>
+        <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">
+            <span id="theme-icon">☀️</span> Modo Claro
+        </button>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('calc')">Calculadora</button>
+        <button class="tab-btn" onclick="switchTab('hist')">Histórico Salvo</button>
+    </div>
+
+    <!-- ABA CALCULADORA -->
+    <div id="calc-tab" class="tab-content active">
+        
+        <!-- Esquerda: Entradas -->
+        <div class="card" style="display: flex; flex-direction: column;">
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Ref</label>
+                    <select id="sel-mes" style="width: 130px;"></select>
+                    <input type="number" id="inp-ano" style="width: 85px;">
+                </div>
+                <div class="input-group">
+                    <label>Dependentes IR</label>
+                    <input type="number" id="inp-deps" value="0" min="0" inputmode="numeric"
+                        autocorrect="off" autocomplete="off"
+                        style="width: 70px; text-align: center; font-weight: bold; font-family: monospace;">
+                </div>
+                <!-- Botão PDF -->
+                <div class="input-group" style="margin-left: auto;">
+                    <label for="pdf-input" class="btn" id="pdf-btn" style="cursor:pointer; background: linear-gradient(135deg,#6366f1,#8b5cf6); color:white; border:none; padding: 10px 18px; border-radius: 8px; display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:1.1rem">📄</span> Importar Contracheque PDF
+                    </label>
+                    <input type="file" id="pdf-input" accept=".pdf,application/pdf" style="display:none" onchange="lerPDF(this)">
+                </div>
+                <!-- Botão Configurar IR -->
+                <div class="input-group">
+                    <button onclick="abrirConfigIR()"
+                        style="background:rgba(245,158,11,0.15);color:#f59e0b;
+                               border:1px solid rgba(245,158,11,0.3);padding:10px 16px;
+                               border-radius:8px;display:flex;align-items:center;gap:8px;
+                               cursor:pointer;font-weight:600;font-size:0.9rem;margin-top:auto;">
+                        ⚙️ Tabela IR
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3 Seções lado a lado -->
+            <div class="sections-grid">
+
+                <!-- Vantagens -->
+                <div class="section border-green">
+                    <div class="section-header">
+                        <span class="text-green" style="font-size:0.85rem;">1. VANTAGENS (Trib.)</span>
+                        <button class="btn btn-add text-green" onclick="addDynamicItem('dyn-vantagens')">+</button>
+                    </div>
+                    <div class="section-content" id="sec-vantagens"></div>
+                    <div class="section-content" id="dyn-vantagens" style="padding-top: 0;"></div>
+                </div>
+
+                <!-- Isentos -->
+                <div class="section border-gray">
+                    <div class="section-header">
+                        <span class="text-gray" style="font-size:0.85rem;">2. ISENTOS</span>
+                        <button class="btn btn-add text-gray" onclick="addDynamicItem('dyn-isentos')">+</button>
+                    </div>
+                    <div class="section-content" id="sec-isentos"></div>
+                    <div class="section-content" id="dyn-isentos" style="padding-top: 0;"></div>
+                </div>
+
+                <!-- Descontos -->
+                <div class="section border-red">
+                    <div class="section-header">
+                        <span class="text-red" style="font-size:0.85rem;">3. DESCONTOS</span>
+                        <button class="btn btn-add text-red" onclick="addDynamicItem('dyn-descontos')">+</button>
+                    </div>
+                    <div class="section-content" id="sec-descontos"></div>
+                    <div class="section-content" id="dyn-descontos" style="padding-top: 0;"></div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Direita: Resultados (Sticky) -->
+        <div class="results-wrapper">
+            <div class="card">
+                <div class="results-grid">
+                    <div class="result-card info">
+                        <div class="result-label">Rendimento Bruto</div>
+                        <div class="result-val" id="res-bruto">R$ 0,00</div>
+                    </div>
+                    <div class="result-card danger">
+                        <div class="result-label">Total Descontos</div>
+                        <div class="result-val" id="res-desc">R$ 0,00</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-label">Base de Cálculo IR</div>
+                        <div class="result-val" id="res-base">R$ 0,00</div>
+                    </div>
+                    <div class="result-card warning">
+                        <div class="result-label">IRRF Calculado</div>
+                        <div class="result-val" id="res-irrf">R$ 0,00</div>
+                    </div>
+                </div>
+
+                <div class="liquid-card">
+                    <div class="result-label">VALOR LÍQUIDO A RECEBER</div>
+                    <div class="result-val" id="res-liquido">R$ 0,00</div>
+                </div>
+                
+                <button class="btn-primary" onclick="calcularTudo()">Calcular Meu Salário</button>
+                <button class="btn-save" id="btn-save" disabled onclick="salvarHistorico()">
+                    <span style="font-size: 1.2rem; margin-right: 8px;">💾</span> Salvar no Histórico
+                </button>
+
+                <!-- Extrato Detalhado -->
+                <div class="extrato" id="extrato-container">
+                    <div class="extrato-title" id="extrato-ref">DEMONSTRATIVO DE PAGAMENTO</div>
+                    <div id="extrato-content"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ABA HISTÓRICO -->
+    <div id="hist-tab" class="tab-content" style="display: none;">
+        <div class="card" style="min-height: 50vh; grid-column: 1 / -1;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px;">
+                <h2 style="font-weight: 800; font-size: 1.5rem; color: white;">Meus Salvos</h2>
+                <button class="btn" style="background: rgba(255,255,255,0.05);" onclick="renderHistorico()">Atualizar Lista</button>
+            </div>
+            <div id="historico-lista">
+                <p style="color: var(--text-muted); text-align: center; padding: 40px 0; font-size: 1.1rem;">
+                    Nenhum contracheque salvo ainda.<br>
+                    <span style="font-size: 0.9rem; opacity: 0.7;">Vá na Calculadora, calcule e clique em Salvar no Histórico!</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- Lógica de Negócio ---
+    // Tabela IRRF 2026 (editável via ⚙️ Configurar IR)
+    const tabelaIrffPadrao = {
+        limite:   [2428.80, 2826.65, 3751.05, 4664.68, Infinity],
+        aliquota: [0.0,     0.075,   0.15,    0.225,   0.275],
+        deducao:  [0.0,     182.16,  394.16,  675.49,  908.73]
+    };
+    let tabelaIrff = JSON.parse(localStorage.getItem('tabela_irrf') || 'null');
+    if (!tabelaIrff || !tabelaIrff.limite) {
+        tabelaIrff = JSON.parse(JSON.stringify(tabelaIrffPadrao));
+    }
+    let DEP_VALOR = parseFloat(localStorage.getItem('dep_valor')  || '189.59');
+    let DESC_SIMPLIFICADO = parseFloat(localStorage.getItem('desc_simpl') || '607.20');
+    
+    // Auto-update migration para quem tinha o cache antigo de 2025:
+    if (DESC_SIMPLIFICADO === 564.80) {
+        DESC_SIMPLIFICADO = 607.20;
+        localStorage.setItem('desc_simpl', '607.20');
+    }
+
+    const dataIniciais = {
+        vantagens: {
+            "0003 Soldo": 1601.84,
+            "0048 Grat Ativid Policial V": 2950.19,
+            "1075 CET Res Cope 469/2009": 1121.29,
+            "3310 Dif 13o salário Variável": 0,
+            "4038 Hora Extra 50% PM": 0,
+            "4043 Adicional Noturn Horas PM": 261.66,
+            "MZ02 Férias 1/3": 0,
+            "MZ10 Médias férias": 0
+        },
+        isentos: {
+            "4000 Evento Noturno": 0,
+            "4001 Evento Diurno": 334.32,
+            "2004 Fardamento": 251.16,
+            "7029 Auxilio Alimentação": 440.00,
+            "7083 Auxilio Transporte PM": 259.60,
+            "/332 1ª parcela 13° salário": 0
+        },
+        descontos: {
+            "5017 Empréstimo Comum": 864.43,
+            "7033 Assistência a Saúde": 326.42,
+            "7035 Planserv / Cônjuge": 163.21,
+            "7040 Co-participação Planserv": 30.00,
+            "7P44 Contribuição SPSM": 595.70
+        }
+    };
+
+    const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+
+    let ultimoCalculo = null;
+
+    // --- Tema ---
+    function toggleTheme() {
+        const body = document.body;
+        const btn = document.getElementById('theme-btn');
+        const isLight = body.classList.toggle('light');
+        if (isLight) {
+            btn.innerHTML = '<span id="theme-icon">🌙</span> Modo Escuro';
+        } else {
+            btn.innerHTML = '<span id="theme-icon">☀️</span> Modo Claro';
+        }
+        localStorage.setItem('tema_contracheque', isLight ? 'light' : 'dark');
+    }
+
+    // --- Inicialização ---
+    function init() {
+        // Restaura tema salvo
+        const temaSalvo = localStorage.getItem('tema_contracheque');
+        if (temaSalvo === 'light') {
+            document.body.classList.add('light');
+            document.getElementById('theme-btn').innerHTML = '<span id="theme-icon">🌙</span> Modo Escuro';
+        }
+        // Monta o dropdown de meses
+        const selMes = document.getElementById('sel-mes');
+        meses.forEach((m) => {
+            const opt = document.createElement('option');
+            opt.value = m;
+            opt.text = m;
+            if (m === 'Março') opt.selected = true;
+            selMes.appendChild(opt);
+        });
+        document.getElementById('inp-ano').value = 2026;
+
+        renderInputs('sec-vantagens', dataIniciais.vantagens);
+        renderInputs('sec-isentos', dataIniciais.isentos);
+        renderInputs('sec-descontos', dataIniciais.descontos);
+
+        addDynamicItem('dyn-vantagens');
+        addDynamicItem('dyn-isentos');
+        addDynamicItem('dyn-descontos');
+
+        // Tenta restaurar rascunho salvo antes de calcular
+        const restaurou = restoreRascunho();
+        if (!restaurou) calcularTudo();
+
+        renderHistorico();
+        setupAutoCalc();
+    }
+
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => {
+            c.classList.remove('active');
+            c.style.display = 'none';
+        });
+
+        if (tab === 'calc') {
+            document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+            const t = document.getElementById('calc-tab');
+            t.classList.add('active');
+            t.style.display = '';
+        } else {
+            document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+            const t = document.getElementById('hist-tab');
+            t.classList.add('active');
+            t.style.display = 'block';
+            renderHistorico();
+        }
+    }
+
+    function formatCurrency(val) {
+        return val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function parseCurrency(valStr) {
+        if (!valStr) return 0;
+        let v = String(valStr).replace('R$', '').trim();
+        if (v.includes(',')) {
+            v = v.replace(/\./g, '');
+            v = v.replace(',', '.');
+        }
+        const num = parseFloat(v);
+        return isNaN(num) ? 0 : num;
+    }
+
+    function renderInputs(containerId, data) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+        for (const [key, val] of Object.entries(data)) {
+            const row = document.createElement('div');
+            row.className = 'item-row';
+            row.innerHTML = `
+                <span>${key}</span>
+                <input type="number" step="0.01" inputmode="decimal" autocorrect="off" autocomplete="off"
+                    class="fixed-val" data-key="${key}" value="${val.toFixed(2)}" onfocus="this.select()">
+            `;
+            container.appendChild(row);
+        }
+    }
+
+    function addDynamicItem(containerId, name = '', val = '') {
+        const container = document.getElementById(containerId);
+        const row = document.createElement('div');
+        row.className = 'item-row dyn-item';
+        row.innerHTML = `
+            <input type="text" placeholder="Nome do Adicional/Desconto" value="${name}" autocorrect="off" autocapitalize="none">
+            <input type="number" step="0.01" inputmode="decimal" autocorrect="off" autocomplete="off" placeholder="0.00" value="${val}" onfocus="this.select()">
+            <button class="btn btn-remove" onclick="this.parentElement.remove()" title="Remover">✕</button>
+        `;
+        container.appendChild(row);
+    }
+
+    // --- Motor de Cálculo ---
+    function calcularIrrf(base) {
+        for (let i = 0; i < tabelaIrff.limite.length; i++) {
+            const lim = (tabelaIrff.limite[i] === null) ? Infinity : tabelaIrff.limite[i];
+            if (base <= lim) {
+                const aliquota = tabelaIrff.aliquota[i];
+                const deducao = tabelaIrff.deducao[i];
+                const irrf = (base * aliquota) - deducao;
+                return { irrf: Math.max(0, irrf), aliquota, deducao };
+            }
+        }
+        return { irrf: 0, aliquota: 0, deducao: 0 };
+    }
+
+    function getSectionData(fixId, dynId) {
+        const items = {};
+        const dynArr = [];
+        let total = 0;
+
+        document.querySelectorAll(`#${fixId} .fixed-val`).forEach(el => {
+            const val = parseCurrency(el.value);
+            items[el.getAttribute('data-key')] = val;
+            total += val;
+        });
+
+        document.querySelectorAll(`#${dynId} .dyn-item`).forEach(el => {
+            const inputs = el.querySelectorAll('input');
+            const name = inputs[0].value.trim();
+            const val = parseCurrency(inputs[1].value);
+            if (name || val > 0) {
+                dynArr.push({ name, val });
+                total += val;
+            }
+        });
+
+        return { items, dynArr, total };
+    }
+
+    function calcularTudo() {
+        // Anima o botão
+        const btnCalc = document.querySelector('.btn-primary');
+        btnCalc.style.transform = 'scale(0.98)';
+        setTimeout(() => btnCalc.style.transform = '', 150);
+
+        const vt = getSectionData('sec-vantagens', 'dyn-vantagens');
+        const is = getSectionData('sec-isentos', 'dyn-isentos');
+        const ds = getSectionData('sec-descontos', 'dyn-descontos');
+
+        const remBruta = vt.total + is.total;
+        
+        const deps = parseInt(document.getElementById('inp-deps').value) || 0;
+        const deducaoDeps = deps * DEP_VALOR;
+        
+        const spsmKey = Object.keys(ds.items).find(k => k.includes('SPSM'));
+        const spsm = spsmKey ? ds.items[spsmKey] : 0;
+
+        const baseLegal = vt.total - spsm - deducaoDeps;
+        const irLegal = calcularIrrf(baseLegal);
+
+        const baseSimp = vt.total - DESC_SIMPLIFICADO;
+        const irSimp = calcularIrrf(baseSimp);
+
+        let irFinalRaw, baseFinal, calcInfo;
+
+        if (irSimp.irrf < irLegal.irrf) {
+            irFinalRaw = irSimp.irrf;
+            baseFinal = baseSimp;
+            calcInfo = {
+                metodo: "Simplificado", base: baseFinal, aliquota: irSimp.aliquota, deducao: irSimp.deducao,
+                detalhe: `R$ ${formatCurrency(vt.total)} - R$ ${formatCurrency(DESC_SIMPLIFICADO)} (Padrão)`,
+                irrfBase: irFinalRaw
+            };
+        } else {
+            irFinalRaw = irLegal.irrf;
+            baseFinal = baseLegal;
+            let detalheTxt = `R$ ${formatCurrency(vt.total)} - R$ ${formatCurrency(spsm)} (Prev)`;
+            if (deducaoDeps > 0) detalheTxt += ` - R$ ${formatCurrency(deducaoDeps)} (Deps)`;
+            calcInfo = {
+                metodo: "Legal", base: baseFinal, aliquota: irLegal.aliquota, deducao: irLegal.deducao,
+                detalhe: detalheTxt,
+                irrfBase: irFinalRaw
+            };
+        }
+
+        // --- Nova Regra 2026: Desconto extra baseado na renda tributável ---
+        let irFinal = irFinalRaw;
+        let descontoRegra2026 = 0;
+        let infoRegra2026 = "";
+
+        if (vt.total <= 5000.00) {
+            descontoRegra2026 = irFinalRaw; // O desconto é exatamente o valor que zera o imposto
+            irFinal = 0;
+            infoRegra2026 = "Isenção Automática 2026 (Renda até R$ 5.000)";
+        } else if (vt.total <= 7350.00) {
+            let desconto = 978.62 - (0.133145 * vt.total);
+            if (desconto > 0) {
+                descontoRegra2026 = desconto;
+                irFinal = Math.max(0, irFinalRaw - desconto);
+                infoRegra2026 = `Redutor Regra 2026: -R$ ${formatCurrency(desconto)}`;
+            }
+        }
+        
+        calcInfo.descontoExtra = descontoRegra2026;
+        calcInfo.infoExtra = infoRegra2026;
+
+        const totalDesc = ds.total + irFinal;
+        const liquido = remBruta - totalDesc;
+
+        function updateAnim(id, valStr) {
+            const el = document.getElementById(id);
+            el.innerText = valStr;
+            el.style.opacity = '0';
+            setTimeout(() => el.style.opacity = '1', 10);
+        }
+
+        updateAnim('res-bruto', `R$ ${formatCurrency(remBruta)}`);
+        updateAnim('res-desc', `R$ ${formatCurrency(totalDesc)}`);
+        updateAnim('res-base', `R$ ${formatCurrency(baseFinal)}`);
+        updateAnim('res-irrf', `R$ ${formatCurrency(irFinal)}`);
+        updateAnim('res-liquido', `R$ ${formatCurrency(liquido)}`);
+
+        document.getElementById('btn-save').disabled = false;
+        
+        const mes = document.getElementById('sel-mes').value;
+        const ano = document.getElementById('inp-ano').value;
+
+        ultimoCalculo = {
+            id: `${mes}/${ano}`, mes, ano, deps,
+            entradas: { vt, is, ds },
+            resultados: { bruto: remBruta, descontos: totalDesc, irrf: irFinal, liquido, base: baseFinal, calcInfo }
+        };
+
+        gerarExtrato();
+        autoSaveRascunho(); // Salva rascunho após cada cálculo
+    }
+
+    // --- AUTO-SAVE ---
+    let autoCalcTimer = null;
+
+    function setupAutoCalc() {
+        // Escuta mudanças em qualquer input dentro do card de entradas
+        document.querySelector('#calc-tab .card').addEventListener('input', () => {
+            clearTimeout(autoCalcTimer);
+            autoCalcTimer = setTimeout(() => {
+                calcularTudo();
+            }, 600); // debounce de 600ms após parar de digitar
+        });
+    }
+
+    function autoSaveRascunho() {
+        try {
+            const state = coletarEstadoFormulario();
+            localStorage.setItem('rascunho_contracheque', JSON.stringify(state));
+            mostrarToastAutoSave();
+        } catch(e) { /* silencioso */ }
+    }
+
+    function coletarEstadoFormulario() {
+        const fixos = (secId) => {
+            const result = {};
+            document.querySelectorAll(`#${secId} .fixed-val`).forEach(el => {
+                result[el.getAttribute('data-key')] = el.value;
+            });
+            return result;
+        };
+        const dinamicos = (dynId) => {
+            const arr = [];
+            document.querySelectorAll(`#${dynId} .dyn-item`).forEach(el => {
+                const inputs = el.querySelectorAll('input');
+                arr.push({ name: inputs[0].value, val: inputs[1].value });
+            });
+            return arr;
+        };
+        return {
+            mes: document.getElementById('sel-mes').value,
+            ano: document.getElementById('inp-ano').value,
+            deps: document.getElementById('inp-deps').value,
+            vantagens_fixas: fixos('sec-vantagens'),
+            isentos_fixos: fixos('sec-isentos'),
+            descontos_fixos: fixos('sec-descontos'),
+            vantagens_din: dinamicos('dyn-vantagens'),
+            isentos_din: dinamicos('dyn-isentos'),
+            descontos_din: dinamicos('dyn-descontos'),
+        };
+    }
+
+    function restoreRascunho() {
+        try {
+            const saved = localStorage.getItem('rascunho_contracheque');
+            if (!saved) return false;
+            const s = JSON.parse(saved);
+
+            document.getElementById('sel-mes').value = s.mes || 'Março';
+            document.getElementById('inp-ano').value = s.ano || 2026;
+            document.getElementById('inp-deps').value = s.deps || 0;
+
+            const restoreFixos = (secId, map) => {
+                document.querySelectorAll(`#${secId} .fixed-val`).forEach(el => {
+                    const k = el.getAttribute('data-key');
+                    if (map && map[k] !== undefined) el.value = map[k];
+                });
+            };
+            restoreFixos('sec-vantagens', s.vantagens_fixas);
+            restoreFixos('sec-isentos', s.isentos_fixos);
+            restoreFixos('sec-descontos', s.descontos_fixos);
+
+            const restoreDin = (dynId, arr) => {
+                const cont = document.getElementById(dynId);
+                cont.innerHTML = '';
+                (arr || []).forEach(d => addDynamicItem(dynId, d.name, d.val));
+                if (!arr || arr.length === 0) addDynamicItem(dynId);
+            };
+            restoreDin('dyn-vantagens', s.vantagens_din);
+            restoreDin('dyn-isentos', s.isentos_din);
+            restoreDin('dyn-descontos', s.descontos_din);
+
+            calcularTudo();
+            return true;
+        } catch(e) { return false; }
+    }
+
+    let toastTimer = null;
+    function mostrarToastAutoSave() {
+        let toast = document.getElementById('autosave-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'autosave-toast';
+            toast.style.cssText = `
+                position: fixed; bottom: 20px; right: 20px;
+                background: rgba(16,185,129,0.9); color: white;
+                padding: 10px 18px; border-radius: 8px;
+                font-size: 0.85rem; font-weight: 600;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                transition: opacity 0.4s ease; z-index: 9999;
+                display: flex; align-items: center; gap: 8px;
+            `;
+            toast.innerHTML = '✓ Rascunho salvo automaticamente';
+            document.body.appendChild(toast);
+        }
+        toast.style.opacity = '1';
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => { toast.style.opacity = '0'; }, 2000);
+    }
+
+    function addExtratoRow(html, label, val, cls = '', bold=false) {
+        const valStr = val > 0 ? `R$ ${formatCurrency(val)}` : '-';
+        const b = bold ? 'bold' : '';
+        return html + `<div class="extrato-row ${cls} ${b}"><span>${label}</span><span>${valStr}</span></div>`;
+    }
+
+    function gerarExtrato() {
+        const ec = document.getElementById('extrato-container');
+        const cont = document.getElementById('extrato-content');
+        
+        // Remove and re-add class to trigger animation again
+        ec.classList.remove('visible');
+        void ec.offsetWidth; 
+        ec.classList.add('visible');
+        
+        document.getElementById('extrato-ref').innerText = `DEMONSTRATIVO - ${ultimoCalculo.id}`;
+        
+        const { vt, is, ds } = ultimoCalculo.entradas;
+        const res = ultimoCalculo.resultados;
+        
+        let html = `<div style="color: #34d399; font-weight: 700; margin-bottom: 8px; font-size: 0.9rem; text-transform: uppercase;">Créditos / Vantagens</div>`;
+        for (const [k, v] of Object.entries(vt.items)) if(v>0) html = addExtratoRow(html, k, v);
+        vt.dynArr.forEach(i => html = addExtratoRow(html, i.name, i.val));
+
+        for (const [k, v] of Object.entries(is.items)) if(v>0) html = addExtratoRow(html, `${k} (Isento)`, v, 'gray');
+        is.dynArr.forEach(i => html = addExtratoRow(html, `${i.name} (Isento)`, i.val, 'gray'));
+
+        html += `<div class="divider"></div>`;
+        html = addExtratoRow(html, "TOTAL BRUTO", res.bruto, 'green', true);
+
+        html += `<div style="color: #f87171; font-weight: 700; margin: 20px 0 8px 0; font-size: 0.9rem; text-transform: uppercase;">Débitos / Descontos</div>`;
+        for (const [k, v] of Object.entries(ds.items)) if(v>0) html = addExtratoRow(html, k, v);
+        ds.dynArr.forEach(i => html = addExtratoRow(html, i.name, i.val));
+        
+        html = addExtratoRow(html, `IMPOSTO DE RENDA (${res.calcInfo.metodo})`, res.irrf, 'orange');
+
+        html += `<div class="divider"></div>`;
+        html = addExtratoRow(html, "TOTAL DESCONTOS", res.descontos, 'red', true);
+
+        const pct = (res.calcInfo.aliquota * 100).toFixed(1);
+        let memoriaHtml = `
+            <div class="info-box">
+                <b>ℹ️ Memória do Imposto (${res.calcInfo.metodo})</b><br><br>
+                1. Base: ${res.calcInfo.detalhe} = <b>R$ ${formatCurrency(res.calcInfo.base)}</b><br>
+                2. Parcial: (Base × ${pct}%) - R$ ${formatCurrency(res.calcInfo.deducao)} = <b>R$ ${formatCurrency(res.calcInfo.irrfBase)}</b>`;
+                
+        if (res.calcInfo.descontoExtra > 0) {
+            memoriaHtml += `<br>3. ${res.calcInfo.infoExtra} = <b style="color:var(--text-main);">R$ ${formatCurrency(res.irrf)}</b>`;
+        } else {
+            memoriaHtml = memoriaHtml.replace('2. Parcial:', '2. Final:');
+        }
+        memoriaHtml += `</div>`;
+        html += memoriaHtml;
+
+        html += `<div class="divider" style="background:var(--primary); height:2px; margin-top:25px;"></div>`;
+        html = addExtratoRow(html, "LÍQUIDO A RECEBER", res.liquido, 'extrato-liquid', true);
+        
+        cont.innerHTML = html;
+    }
+
+    // --- Histórico ---
+    function salvarHistorico() {
+        if (!ultimoCalculo) return;
+        let historico = JSON.parse(localStorage.getItem('contracheques') || '[]');
+        historico = historico.filter(h => h.id !== ultimoCalculo.id);
+        historico.push(ultimoCalculo);
+        localStorage.setItem('contracheques', JSON.stringify(historico));
+        
+        const btn = document.getElementById('btn-save');
+        const origText = btn.innerHTML;
+        btn.innerHTML = '✅ Salvo com sucesso!';
+        btn.style.background = 'var(--success-gradient)';
+        btn.style.color = 'white';
+        
+        setTimeout(() => {
+            btn.innerHTML = origText;
+            btn.style.background = '';
+            btn.style.color = '';
+        }, 2000);
+        
+        renderHistorico();
+    }
+
+    function renderHistorico() {
+        const lista = document.getElementById('historico-lista');
+        let historico = JSON.parse(localStorage.getItem('contracheques') || '[]');
+        
+        if (historico.length === 0) {
+            lista.innerHTML = `
+                <p style="color: var(--text-muted); text-align: center; padding: 40px 0; font-size: 1.1rem;">
+                    Nenhum contracheque salvo ainda.<br>
+                    <span style="font-size: 0.9rem; opacity: 0.7;">Vá na Calculadora, calcule e clique em Salvar no Histórico!</span>
+                </p>`;
+            return;
+        }
+
+        historico.reverse(); 
+        lista.innerHTML = '';
+        
+        historico.forEach((item, index) => {
+            const div = document.createElement('div');
+            div.className = 'history-item';
+            div.style.animation = `fadeIn 0.3s ease-out ${index * 0.1}s both`;
+            div.innerHTML = `
+                <div class="history-info">
+                    <div class="history-title">${item.id}</div>
+                    <div class="history-val text-green">R$ ${formatCurrency(item.resultados.liquido)}</div>
+                </div>
+                <div class="history-actions">
+                    <button class="btn" style="background: rgba(59, 130, 246, 0.1); color: var(--primary); border-color: var(--primary);" onclick="abrirHistorico('${item.id}')">📂 Abrir</button>
+                    <button class="btn btn-remove" onclick="deletarHistorico('${item.id}')">✕</button>
+                </div>
+            `;
+            lista.appendChild(div);
+        });
+    }
+
+    function deletarHistorico(id) {
+        if(confirm(`Apagar registro de ${id}?`)) {
+            let historico = JSON.parse(localStorage.getItem('contracheques') || '[]');
+            historico = historico.filter(h => h.id !== id);
+            localStorage.setItem('contracheques', JSON.stringify(historico));
+            renderHistorico();
+        }
+    }
+
+    function abrirHistorico(id) {
+        let historico = JSON.parse(localStorage.getItem('contracheques') || '[]');
+        const item = historico.find(h => h.id === id);
+        if(!item) return;
+
+        document.getElementById('sel-mes').value = item.mes;
+        document.getElementById('inp-ano').value = item.ano;
+        document.getElementById('inp-deps').value = item.deps;
+
+        const updateFixos = (contId, itemsMap) => {
+            document.querySelectorAll(`#${contId} .fixed-val`).forEach(el => {
+                const k = el.getAttribute('data-key');
+                if(itemsMap[k] !== undefined) el.value = itemsMap[k].toFixed(2);
+            });
+        };
+        updateFixos('sec-vantagens', item.entradas.vt.items);
+        updateFixos('sec-isentos', item.entradas.is.items);
+        updateFixos('sec-descontos', item.entradas.ds.items);
+
+        const updateDyn = (contId, dynArr) => {
+            const cont = document.getElementById(contId);
+            cont.innerHTML = '';
+            dynArr.forEach(d => addDynamicItem(contId, d.name, d.val));
+            if(dynArr.length === 0) addDynamicItem(contId);
+        };
+        updateDyn('dyn-vantagens', item.entradas.vt.dynArr);
+        updateDyn('dyn-isentos', item.entradas.is.dynArr);
+        updateDyn('dyn-descontos', item.entradas.ds.dynArr);
+
+        switchTab('calc');
+        calcularTudo();
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // =========================================================
+    // --- CONFIGURAÇÃO DA TABELA DO IR ---
+    // =========================================================
+
+    function abrirConfigIR() {
+        document.getElementById('ir-modal')?.remove();
+
+        const t = tabelaIrff;
+        const nomes = ['Faixa 1 (Isento)', 'Faixa 2', 'Faixa 3', 'Faixa 4', 'Faixa 5'];
+        const cores = ['#34d399','#fbbf24','#fb923c','#f87171','#e879f9'];
+
+        const linhas = nomes.map((nome, i) => `
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.07);">
+                <td style="padding:8px 6px;color:${cores[i]};font-weight:600;font-size:0.82rem;">${nome}</td>
+                <td style="padding:8px 6px;">
+                    <input type="number" step="0.01" id="ir-lim-${i}" min="0"
+                        value="${(t.limite[i] === Infinity || t.limite[i] === null) ? '' : Number(t.limite[i]).toFixed(2)}"
+                        placeholder="sem limite"
+                        style="width:110px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);
+                               border-radius:6px;color:white;padding:5px 8px;font-family:monospace;font-size:0.85rem;">
+                </td>
+                <td style="padding:8px 6px;">
+                    <div style="display:flex;align-items:center;gap:4px;">
+                        <input type="number" step="0.1" id="ir-aliq-${i}" min="0" max="100"
+                            value="${(Number(t.aliquota[i])*100).toFixed(1)}"
+                            style="width:70px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);
+                                   border-radius:6px;color:${cores[i]};padding:5px 8px;font-family:monospace;font-size:0.85rem;font-weight:700;">
+                        <span style="color:#64748b;font-size:0.8rem;">%</span>
+                    </div>
+                </td>
+                <td style="padding:8px 6px;">
+                    <div style="display:flex;align-items:center;gap:4px;">
+                        <span style="color:#64748b;font-size:0.75rem;">R$</span>
+                        <input type="number" step="0.01" id="ir-ded-${i}" min="0"
+                            value="${Number(t.deducao[i]).toFixed(2)}"
+                            style="width:90px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);
+                                   border-radius:6px;color:white;padding:5px 8px;font-family:monospace;font-size:0.85rem;">
+                    </div>
+                </td>
+            </tr>`).join('');
+
+        const modal = document.createElement('div');
+        modal.id = 'ir-modal';
+        modal.style.cssText = `
+            position:fixed;inset:0;z-index:10000;
+            background:rgba(0,0,0,0.8);backdrop-filter:blur(6px);
+            display:flex;align-items:center;justify-content:center;padding:16px;
+        `;
+        modal.innerHTML = `
+        <div style="background:#1e293b;border:1px solid rgba(245,158,11,0.3);border-radius:16px;
+                    max-width:720px;width:100%;max-height:92vh;overflow-y:auto;
+                    box-shadow:0 24px 80px rgba(0,0,0,0.6);">
+
+            <div style="padding:20px 24px;border-bottom:1px solid rgba(255,255,255,0.08);
+                        display:flex;align-items:center;justify-content:space-between;">
+                <div>
+                    <h2 style="font-size:1.1rem;font-weight:800;color:#f59e0b;margin:0;">
+                        ⚙️ Tabela do Imposto de Renda
+                    </h2>
+                    <p style="color:#94a3b8;font-size:0.8rem;margin:3px 0 0;">
+                        Atualize anualmente quando o governo divulgar a nova tabela
+                    </p>
+                </div>
+                <button onclick="document.getElementById('ir-modal').remove()"
+                    style="background:rgba(255,255,255,0.06);color:#94a3b8;border:1px solid rgba(255,255,255,0.1);
+                           padding:7px 14px;border-radius:8px;cursor:pointer;font-size:0.85rem;">✕ Fechar</button>
+            </div>
+
+            <div style="padding:20px 24px;">
+
+                <!-- Regras para Leigos (IR 2026) -->
+                <div style="background:rgba(52, 211, 153, 0.08);border:1px solid rgba(52, 211, 153, 0.2);
+                            border-radius:10px;padding:16px;margin-bottom:20px;font-size:0.85rem;color:#cbd5e1;line-height:1.6;">
+                    <b style="color:#34d399;font-size:1rem;">🧠 Como funciona o cálculo do IR (Regras 2026):</b><br><br>
+                    Para aplicar a apuração mais benéfica ao funcionário, a Receita Federal determina que o cálculo seja feito em 3 etapas:<br><br>
+                    
+                    <b style="color:#fcd34d;">Passo 1: Duas Simulações Iniciais</b><br>
+                    O sistema simula o imposto de duas maneiras diferentes para encontrar o menor valor:<br>
+                    • <span style="color:#94a3b8;">Modelo Tradicional</span>: Base = (Vantagens Tributáveis) − (Previdência Oficial) − (Dedução por Dependentes).<br>
+                    • <span style="color:#94a3b8;">Modelo Simplificado</span>: Base = (Vantagens Tributáveis) − (Desconto Padrão de <b>R$ 607,20</b>).
+                    <br><br>
+
+                    <b style="color:#fcd34d;">Passo 2: Vantagem ao Empregado</b><br>
+                    O modelo normativo obriga a escolha do cálculo do Passo 1 que apresentar o <b>menor valor de imposto a pagar</b>.<br><br>
+                    
+                    <b style="color:#fcd34d;">Passo 3: Tabela de Redução Adicional (Criada em 2026)</b><br>
+                    Por fim, sobre o valor encontrado no Passo 2, aplica-se uma redução extra escalonada:<br>
+                    • Rendimento Tributável <b style="color:#34d399;">Até R$ 5.000,00</b>: Isenção automática do IR <b>(Imposto = Zero)</b>.<br>
+                    • Rendimento <b style="color:#34d399;">de R$ 5.000,01 até R$ 7.350,00</b>: Aplica-se na apuração o Redutor de <b>R$ 978,62 − (0,133145 × Rendimento)</b>.<br><br>
+
+                    <div style="background:rgba(0,0,0,0.3); border-left:3px solid #60a5fa; border-radius:6px; padding:12px; margin-top:8px; font-size:0.8rem;">
+                        <b style="color:#60a5fa;">📋 Exemplo Prático (Vantagens de R$ 6.000, INSS de R$ 641,50 e 2 Dependentes):</b><br>
+                        1. <b>Tradicional:</b> (6.000 - 641,50 - 379,18 Dep.) = Base 4.979,32. Aplicando a tabela, gera-se um Imposto de R$ 460,58.<br>
+                        2. <b>Simplificado:</b> (6.000 - 607,20 desc padrão) = Base 5.392,80. Aplicando a tabela, gera-se Imposto de R$ 574,29.<br>
+                        <i>Comparativo:</i> O sistema adota automaticamente a opção Tradicional por ser menor (<span style="color:#f87171;">R$ 460,58</span>).<br>
+                        <i>Cálculo do Redutor:</i> R$ 978,62 - (0,133145 × 6.000,00) = <span style="color:#34d399;">R$ 179,75 de crédito/dedução final.</span><br>
+                        <b>IR Final Cobrado no Contracheque:</b> R$ 460,58 - R$ 179,75 = <b>R$ 280,83</b>.
+                    </div>
+                </div>
+
+                <!-- Tabela de faixas -->
+                <div style="overflow-x:auto;margin-bottom:20px;">
+                    <table style="width:100%;border-collapse:collapse;">
+                        <thead>
+                            <tr style="border-bottom:2px solid rgba(255,255,255,0.1);">
+                                <th style="padding:8px 6px;color:#64748b;font-size:0.75rem;text-align:left;text-transform:uppercase;">Faixa</th>
+                                <th style="padding:8px 6px;color:#64748b;font-size:0.75rem;text-align:left;text-transform:uppercase;">Limite Superior (R$)<br><span style="font-weight:400;opacity:0.7;">Deixe vazio = sem limite</span></th>
+                                <th style="padding:8px 6px;color:#64748b;font-size:0.75rem;text-align:left;text-transform:uppercase;">Alíquota</th>
+                                <th style="padding:8px 6px;color:#64748b;font-size:0.75rem;text-align:left;text-transform:uppercase;">Parcela a Deduzir (R$)</th>
+                            </tr>
+                        </thead>
+                        <tbody>${linhas}</tbody>
+                    </table>
+                </div>
+
+                <!-- Outros valores -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;">
+                    <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px;">
+                        <div style="color:#94a3b8;font-size:0.75rem;text-transform:uppercase;margin-bottom:8px;">
+                            Dedução por Dependente
+                        </div>
+                        <div style="display:flex;align-items:center;gap:6px;">
+                            <span style="color:#64748b;font-size:0.8rem;">R$</span>
+                            <input type="number" step="0.01" id="ir-dep" value="${Number(DEP_VALOR).toFixed(2)}"
+                                style="width:110px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);
+                                       border-radius:6px;color:white;padding:6px 10px;font-family:monospace;font-size:0.9rem;">
+                        </div>
+                        <p style="color:#475569;font-size:0.72rem;margin:6px 0 0;">
+                            Valor deduzido por dependente declarado
+                        </p>
+                    </div>
+                    <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px;">
+                        <div style="color:#94a3b8;font-size:0.75rem;text-transform:uppercase;margin-bottom:8px;">
+                            Desconto Simplificado
+                        </div>
+                        <div style="display:flex;align-items:center;gap:6px;">
+                            <span style="color:#64748b;font-size:0.8rem;">R$</span>
+                            <input type="number" step="0.01" id="ir-simpl" value="${Number(DESC_SIMPLIFICADO).toFixed(2)}"
+                                style="width:110px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);
+                                       border-radius:6px;color:white;padding:6px 10px;font-family:monospace;font-size:0.9rem;">
+                        </div>
+                        <p style="color:#475569;font-size:0.72rem;margin:6px 0 0;">
+                            Desconto padrão no modelo simplificado
+                        </p>
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:12px;justify-content:flex-end;">
+                    <button onclick="restaurarTabelaPadrao()"
+                        style="background:rgba(255,255,255,0.05);color:#94a3b8;border:1px solid rgba(255,255,255,0.1);
+                               padding:10px 18px;border-radius:8px;cursor:pointer;font-size:0.88rem;">
+                        🔄 Restaurar Padrão 2026
+                    </button>
+                    <button onclick="salvarConfigIR()"
+                        style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;
+                               padding:10px 24px;border-radius:8px;cursor:pointer;font-weight:700;font-size:0.95rem;">
+                        ✓ Salvar e Recalcular
+                    </button>
+                </div>
+            </div>
+        </div>`;
+        document.body.appendChild(modal);
+    }
+
+    function salvarConfigIR() {
+        const n = 5; // número de faixas
+        const novaTabela = { limite: [], aliquota: [], deducao: [] };
+        for (let i = 0; i < n; i++) {
+            const limInput = document.getElementById(`ir-lim-${i}`).value;
+            novaTabela.limite.push(limInput === '' ? Infinity : parseFloat(limInput));
+            novaTabela.aliquota.push(parseFloat(document.getElementById(`ir-aliq-${i}`).value) / 100);
+            novaTabela.deducao.push(parseFloat(document.getElementById(`ir-ded-${i}`).value) || 0);
+        }
+        const novaDep   = parseFloat(document.getElementById('ir-dep').value)   || DEP_VALOR;
+        const novaSimpl = parseFloat(document.getElementById('ir-simpl').value) || DESC_SIMPLIFICADO;
+
+        // Serializa Infinity como null para JSON
+        const serializavel = {
+            ...novaTabela,
+            limite: novaTabela.limite.map(v => v === Infinity ? null : v)
+        };
+        localStorage.setItem('tabela_irrf', JSON.stringify(serializavel));
+        localStorage.setItem('dep_valor',   novaDep.toString());
+        localStorage.setItem('desc_simpl',  novaSimpl.toString());
+
+        // Aplica na memória
+        tabelaIrff.limite   = novaTabela.limite;
+        tabelaIrff.aliquota = novaTabela.aliquota;
+        tabelaIrff.deducao  = novaTabela.deducao;
+        DEP_VALOR = novaDep;
+        DESC_SIMPLIFICADO = novaSimpl;
+
+        document.getElementById('ir-modal').remove();
+        calcularTudo();
+
+        const toast = document.createElement('div');
+        toast.style.cssText = `position:fixed;bottom:70px;right:20px;
+            background:linear-gradient(135deg,#f59e0b,#d97706);color:white;
+            padding:12px 20px;border-radius:8px;font-size:0.9rem;font-weight:600;
+            box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:9999;`;
+        toast.innerHTML = '✓ Tabela IR salva e recalculada!';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    function restaurarTabelaPadrao() {
+        if (!confirm('Restaurar os valores padrão da Tabela IR 2026?')) return;
+        localStorage.removeItem('tabela_irrf');
+        localStorage.removeItem('dep_valor');
+        localStorage.removeItem('desc_simpl');
+        Object.assign(tabelaIrff, tabelaIrffPadrao);
+        DEP_VALOR = 189.59;
+        DESC_SIMPLIFICADO = 607.20;
+        document.getElementById('ir-modal').remove();
+        calcularTudo();
+    }
+
+    // Inicializa a aplicação de forma segura e compatível com iOS
+    // (window.onload não dispara em alguns WebViews do iPhone)
+    window.onload = init;  // fallback para browsers normais
+
+    // =========================================================
+    // --- LEITURA DE PDF ---
+    // =========================================================
+
+    // Mapeamento de códigos conhecidos por categoria
+    const mapaRubricas = {
+        vantagens: {
+            '0003': '0003 Soldo',
+            '0048': '0048 Grat Ativid Policial V',
+            '1075': '1075 CET Res Cope 469/2009',
+            '3310': '3310 Dif 13o salário Variável',
+            '4038': '4038 Hora Extra 50% PM',
+            '4043': '4043 Adicional Noturn Horas PM',
+            'MZ02': 'MZ02 Férias 1/3',
+            'MZ10': 'MZ10 Médias férias',
+        },
+        isentos: {
+            '4000': '4000 Evento Noturno',
+            '4001': '4001 Evento Diurno',
+            '2004': '2004 Fardamento',
+            '7029': '7029 Auxilio Alimentação',
+            '7083': '7083 Auxilio Transporte PM',
+            '/332': '/332 1ª parcela 13° salário',
+        },
+        descontos: {
+            '5017': '5017 Empréstimo Comum',
+            '7033': '7033 Assistência a Saúde',
+            '7035': '7035 Planserv / Cônjuge',
+            '7040': '7040 Co-participação Planserv',
+            '7P44': '7P44 Contribuição SPSM',
+        }
+    };
+
+    // Todos os códigos em um lookup rápido
+    const todosOsCodigos = {};
+    for (const cat of ['vantagens','isentos','descontos']) {
+        for (const [code, name] of Object.entries(mapaRubricas[cat])) {
+            todosOsCodigos[code] = { cat, name };
+        }
+    }
+
+    async function lerPDF(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        const btn = document.getElementById('pdf-btn');
+        btn.innerHTML = '<span style="font-size:1.1rem">⏳</span> Lendo PDF...';
+        btn.style.opacity = '0.7';
+
+        try {
+            pdfjsLib.GlobalWorkerOptions.workerSrc =
+                'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+            let textoEsquerda = '', textoDireita = '', textoCompleto = '';
+
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const viewport = page.getViewport({ scale: 1 });
+                const midX = viewport.width / 2;
+                const content = await page.getTextContent();
+
+                // Separa itens pelo lado X
+                const itensEsq = content.items.filter(it => it.transform[4] < midX);
+                const itensDir = content.items.filter(it => it.transform[4] >= midX);
+                const itensTodos = content.items;
+
+                textoEsquerda += agruparPorLinha(itensEsq).join('\n') + '\n';
+                textoDireita  += agruparPorLinha(itensDir).join('\n') + '\n';
+                textoCompleto += agruparPorLinha(itensTodos).join('\n') + '\n';
+            }
+
+            const resultado = parseContracheque(textoEsquerda, textoDireita, textoCompleto);
+            window._pdfDoc = pdf; // Guarda para preview
+            mostrarModalConfirmacao(resultado);
+
+        } catch (e) {
+            alert('Erro ao ler o PDF.\n\nDetalhe: ' + e.message);
+        } finally {
+            btn.innerHTML = '<span style="font-size:1.1rem">📄</span> Importar Contracheque PDF';
+            btn.style.opacity = '1';
+            input.value = '';
+        }
+    }
+
+    function agruparPorLinha(items) {
+        if (!items.length) return [];
+        const porY = {};
+        for (const item of items) {
+            const y = item.transform[5].toFixed(1);
+            if (!porY[y]) porY[y] = [];
+            // Guarda x, largura e texto para montagem inteligente
+            porY[y].push({
+                str: item.str,
+                x: item.transform[4],
+                w: item.width || 0
+            });
+        }
+        return Object.entries(porY)
+            .sort((a, b) => parseFloat(b[0]) - parseFloat(a[0]))
+            .map(([, tokens]) => {
+                // Ordena da esquerda para a direita
+                tokens.sort((a, b) => a.x - b.x);
+                let line = '';
+                for (let i = 0; i < tokens.length; i++) {
+                    if (i === 0) { line = tokens[i].str; continue; }
+                    // Gap entre fim do item anterior e início do atual
+                    const gap = tokens[i].x - (tokens[i-1].x + tokens[i-1].w);
+                    // Se gap < 1.5pt os fragmentos são contíguos (ex: "7P" + "44" → "7P44")
+                    line += (gap < 1.5 ? '' : ' ') + tokens[i].str;
+                }
+                return line;
+            });
+    }
+
+    function parseContracheque(textoEsq, textoDir, textoCompleto) {
+        const encontrados = { vantagens: {}, isentos: {}, descontos: {} };
+        let mes = null, ano = null;
+
+        // Detecta mês/ano: 03/2026, 03.2026, Março 2026
+        const reMesAnoNum = /(\d{2})[.\/](\d{4})/;
+        const reMesNome = new RegExp(meses.join('|'), 'i');
+        for (const linha of textoCompleto.split('\n')) {
+            const m = linha.match(reMesAnoNum);
+            if (m) {
+                const numMes = parseInt(m[1]) - 1;
+                if (numMes >= 0 && numMes < 12 && parseInt(m[2]) >= 2020) {
+                    mes = meses[numMes]; ano = m[2]; break;
+                }
+            }
+            const mn = linha.match(reMesNome);
+            const an = linha.match(/20\d{2}/);
+            if (mn && an) { mes = mn[0]; ano = an[0]; break; }
+        }
+
+        // Só aceita valor BR com vírgula: 1.601,84 / 864,43 / 326,42
+        // QTD (30.00) e referência (03.2026) são ignorados por não terem vírgula
+        const reValorBR = /\d{1,3}(?:\.\d{3})*,\d{2}/g;
+
+        const parsarTexto = (texto, categorias) => {
+            for (const linha of texto.split('\n')) {
+                for (const [code, info] of Object.entries(todosOsCodigos)) {
+                    if (!categorias.includes(info.cat)) continue;
+                    // Já detectado? pula (prioridade: esq > dir > completo)
+                    if (encontrados[info.cat][info.name] !== undefined) continue;
+                    const escaped = code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    
+                    // Se o código começa ou termina com um caractere não-palavra (ex: /332), não podemos usar \\b cego nele
+                    const startBound = /^\\w/.test(code) ? '\\b' : '(?:^|\\s)';
+                    const endBound   = /\\w$/.test(code) ? '\\b' : '(?:\\s|$)';
+                    const reCode = new RegExp(`${startBound}${escaped}${endBound}`, 'i');
+                    
+                    const match = reCode.exec(linha);
+                    if (match) {
+                        const resto = linha.slice(match.index + match[0].length);
+                        const valores = [...resto.matchAll(reValorBR)].map(m => parseCurrency(m[0]));
+                        const valor = valores.find(v => v > 0) || 0;
+                        if (valor > 0) encontrados[info.cat][info.name] = valor;
+                        break;
+                    }
+                }
+            }
+        };
+
+        // 1ª passagem: cada coluna com sua categoria (mais preciso)
+        parsarTexto(textoEsq, ['vantagens', 'isentos']);
+        parsarTexto(textoDir, ['descontos']);
+
+        // 2ª passagem: texto completo para tudo que não foi encontrado
+        // (garante que códigos cortados pela borda de coluna sejam capturados)
+        parsarTexto(textoCompleto, ['vantagens', 'isentos', 'descontos']);
+
+        return { encontrados, mes, ano };
+    }
+
+
+    let _pdfScale = 1.2;
+    let _pdfPage = 1;
+
+    function mostrarModalConfirmacao(resultado) {
+        document.getElementById('pdf-modal')?.remove();
+        const { encontrados, mes, ano } = resultado;
+        const total = Object.values(encontrados).reduce((acc, cat) => acc + Object.keys(cat).length, 0);
+        const refTxt = (mes && ano) ? `${mes}/${ano}` : '(não detectado)';
+
+        // buildSection: sempre renderiza a seção (mesmo vazia) com botão + Adicionar
+        const buildSection = (titulo, cor, catKey, items) => {
+            const rows = Object.entries(items).map(([nome, val]) => `
+                <div style="display:flex;align-items:center;gap:8px;padding:5px 0;
+                            border-bottom:1px solid rgba(255,255,255,0.07);">
+                    <span style="flex:1;color:#ccc;font-size:0.8rem;">${nome}</span>
+                    <div style="display:flex;align-items:center;gap:3px;">
+                        <span style="color:#64748b;font-size:0.75rem;">R$</span>
+                        <input type="number" step="0.01" data-key="${nome}" data-cat="${catKey}" value="${val.toFixed(2)}"
+                            style="width:90px;text-align:right;background:rgba(0,0,0,0.35);
+                                   border:1px solid rgba(255,255,255,0.15);border-radius:5px;
+                                   color:${cor};font-weight:700;font-size:0.85rem;
+                                   padding:3px 6px;font-family:monospace;">
+                    </div>
+                </div>`).join('');
+            return `<div style="margin-bottom:14px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;
+                            margin-bottom:6px;">
+                    <span style="color:${cor};font-weight:700;font-size:0.73rem;
+                                 text-transform:uppercase;letter-spacing:0.5px;">${titulo}</span>
+                    <button onclick="adicionarRubricaModal('${catKey}','${cor}')"
+                        style="background:rgba(255,255,255,0.05);color:${cor};border:1px solid ${cor}44;
+                               padding:2px 8px;border-radius:5px;cursor:pointer;font-size:0.72rem;
+                               font-weight:700;display:flex;align-items:center;gap:3px;">
+                        + Adicionar
+                    </button>
+                </div>
+                <div id="modal-sec-${catKey}">${rows}</div>
+            </div>`;
+        };
+
+        const hasPdf = !!window._pdfDoc;
+        const numPages = hasPdf ? window._pdfDoc.numPages : 0;
+
+        const modal = document.createElement('div');
+        modal.id = 'pdf-modal';
+        modal.style.cssText = `
+            position:fixed;inset:0;z-index:10000;
+            background:rgba(0,0,0,0.8);backdrop-filter:blur(6px);
+            display:flex;align-items:center;justify-content:center;padding:16px;
+        `;
+
+        modal.innerHTML = `
+        <div style="background:#1e293b;border:1px solid rgba(255,255,255,0.1);border-radius:16px;
+                    width:100%;max-width:1100px;max-height:93vh;display:flex;flex-direction:column;
+                    box-shadow:0 24px 80px rgba(0,0,0,0.6);overflow:hidden;">
+
+            <!-- Cabeçalho -->
+            <div style="padding:16px 24px;border-bottom:1px solid rgba(255,255,255,0.08);
+                        display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+                <div>
+                    <h2 style="font-size:1.1rem;font-weight:800;color:white;margin:0;">📄 PDF Importado</h2>
+                    <p style="color:#94a3b8;font-size:0.82rem;margin:2px 0 0;">
+                        ${total} rubrica${total!==1?'s':''} detectada${total!==1?'s':''}
+                        &nbsp;·&nbsp; Ref: <b style="color:white;">${refTxt}</b>
+                    </p>
+                </div>
+                <button onclick="document.getElementById('pdf-modal').remove()"
+                    style="background:rgba(255,255,255,0.06);color:#94a3b8;border:1px solid rgba(255,255,255,0.1);
+                           padding:7px 14px;border-radius:8px;cursor:pointer;font-size:0.85rem;">✕ Fechar</button>
+            </div>
+
+            <!-- Corpo: preview + campos -->
+            <div style="display:flex;flex:1;overflow:hidden;min-height:0;">
+
+                <!-- Preview do PDF -->
+                ${hasPdf ? `
+                <div style="display:flex;flex-direction:column;width:55%;border-right:1px solid rgba(255,255,255,0.08);">
+                    <!-- Controles de zoom + página -->
+                    <div style="padding:8px 14px;background:rgba(0,0,0,0.2);display:flex;
+                                align-items:center;gap:8px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.06);">
+                        <button onclick="mudarZoomPDF(-0.2)" title="Diminuir zoom"
+                            style="background:rgba(255,255,255,0.07);color:white;border:none;
+                                   padding:5px 11px;border-radius:6px;cursor:pointer;font-size:1rem;font-weight:700;">−</button>
+                        <span id="pdf-zoom-label" style="color:#94a3b8;font-size:0.8rem;min-width:42px;text-align:center;">100%</span>
+                        <button onclick="mudarZoomPDF(0.2)" title="Aumentar zoom"
+                            style="background:rgba(255,255,255,0.07);color:white;border:none;
+                                   padding:5px 11px;border-radius:6px;cursor:pointer;font-size:1rem;font-weight:700;">+</button>
+                        <button onclick="mudarZoomPDF(0)" title="Ajustar à largura"
+                            style="background:rgba(255,255,255,0.07);color:#94a3b8;border:none;
+                                   padding:5px 10px;border-radius:6px;cursor:pointer;font-size:0.75rem;">Fit</button>
+                        <div style="flex:1;"></div>
+                        ${numPages > 1 ? `
+                        <button onclick="mudarPaginaPDF(-1)"
+                            style="background:rgba(255,255,255,0.07);color:white;border:none;
+                                   padding:5px 10px;border-radius:6px;cursor:pointer;">◀</button>
+                        <span id="pdf-page-label" style="color:#94a3b8;font-size:0.8rem;">
+                            1 / ${numPages}
+                        </span>
+                        <button onclick="mudarPaginaPDF(1)"
+                            style="background:rgba(255,255,255,0.07);color:white;border:none;
+                                   padding:5px 10px;border-radius:6px;cursor:pointer;">▶</button>` : ''}
+                    </div>
+                    <!-- Canvas -->
+                    <div id="pdf-preview-scroll" style="flex:1;overflow:auto;background:#525659;
+                                                       padding:12px;display:block;">
+                        <canvas id="pdf-canvas" style="box-shadow:0 4px 20px rgba(0,0,0,0.5);
+                                                       display:block;margin:0 auto;"></canvas>
+                    </div>
+                </div>` : ''}
+
+                <!-- Campos editáveis -->
+                <div style="${hasPdf ? 'width:45%;' : 'width:100%;'}display:flex;flex-direction:column;">
+                    <div style="padding:12px 16px;background:rgba(0,0,0,0.15);flex-shrink:0;
+                                border-bottom:1px solid rgba(255,255,255,0.06);">
+                        <span style="color:#fbbf24;font-size:0.78rem;">✏️ Edite os valores se preciso antes de confirmar</span>
+                    </div>
+                    <div id="pdf-modal-fields" style="flex:1;overflow-y:auto;padding:14px 16px;">
+                        ${total === 0 ? `<div style="text-align:center;color:#f87171;padding:30px;">
+                            <div style="font-size:2rem;margin-bottom:8px;">⚠️</div>
+                            Nenhuma rubrica reconhecida.<br>
+                            <small style="color:#94a3b8;">O PDF pode ser uma imagem (escaneado).</small>
+                        </div>` :
+                        buildSection('Vantagens Tributáveis', '#34d399', 'vantagens', encontrados.vantagens) +
+                        buildSection('Isentos / Indenizações', '#94a3b8', 'isentos', encontrados.isentos) +
+                        buildSection('Descontos', '#f87171', 'descontos', encontrados.descontos)}
+                    </div>
+                    <!-- Painel de totais em tempo real -->
+                    ${total > 0 ? `<div id="modal-totais" style="padding:12px 16px;background:rgba(0,0,0,0.25);
+                                border-top:1px solid rgba(255,255,255,0.08);flex-shrink:0;">
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+                            <div style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);
+                                        border-radius:8px;padding:8px 10px;text-align:center;">
+                                <div style="color:#94a3b8;font-size:0.65rem;text-transform:uppercase;margin-bottom:3px;">Total Vantagens</div>
+                                <div id="mt-vantagens" style="color:#34d399;font-weight:800;font-size:0.95rem;font-family:monospace;">R$ 0,00</div>
+                            </div>
+                            <div style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);
+                                        border-radius:8px;padding:8px 10px;text-align:center;">
+                                <div style="color:#94a3b8;font-size:0.65rem;text-transform:uppercase;margin-bottom:3px;">Base IR</div>
+                                <div id="mt-base" style="color:#818cf8;font-weight:800;font-size:0.95rem;font-family:monospace;">R$ 0,00</div>
+                            </div>
+                            <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
+                                        border-radius:8px;padding:8px 10px;text-align:center;">
+                                <div style="color:#94a3b8;font-size:0.65rem;text-transform:uppercase;margin-bottom:3px;">Líquido Estimado</div>
+                                <div id="mt-liquido" style="color:white;font-weight:800;font-size:0.95rem;font-family:monospace;">R$ 0,00</div>
+                            </div>
+                        </div>
+                        <div style="margin-top:6px;display:flex;gap:16px;justify-content:center;">
+                            <span style="color:#64748b;font-size:0.7rem;">Desc: <span id="mt-descontos" style="color:#f87171;">R$ 0,00</span></span>
+                            <span style="color:#64748b;font-size:0.7rem;">IR est.: <span id="mt-ir" style="color:#fb923c;">R$ 0,00</span></span>
+                        </div>
+                    </div>` : ''}
+                    <div style="padding:14px 16px;border-top:1px solid rgba(255,255,255,0.08);
+                                display:flex;gap:10px;justify-content:flex-end;flex-shrink:0;">
+                        <button onclick="document.getElementById('pdf-modal').remove()"
+                            style="background:rgba(255,255,255,0.05);color:#94a3b8;
+                                   border:1px solid rgba(255,255,255,0.1);
+                                   padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:600;font-size:0.9rem;">
+                            Cancelar
+                        </button>
+                        ${total > 0 ? `<button onclick="aplicarDadosPDF()"
+                            style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;border:none;
+                                   padding:10px 22px;border-radius:8px;cursor:pointer;font-weight:700;font-size:0.92rem;">
+                            ✓ Preencher Automaticamente
+                        </button>` : ''}
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+        document.body.appendChild(modal);
+        window._pdfResultado = resultado;
+        _pdfPage = 1;
+        _pdfScale = 1.2;
+
+        if (total > 0) {
+            // Inicializa totais e escuta mudanças
+            requestAnimationFrame(() => {
+                atualizarTotaisModal();
+                document.getElementById('pdf-modal-fields')
+                    ?.addEventListener('input', atualizarTotaisModal);
+            });
+        }
+
+        if (hasPdf) {
+            requestAnimationFrame(() => renderPDFPreview().then(() => {
+                setupPDFInteraction();
+                _pdfInteractionSetup = false;
+                setupPDFInteraction();
+            }));
+        }
+    }
+
+    function atualizarTotaisModal() {
+        const modal = document.getElementById('pdf-modal');
+        if (!modal) return;
+
+        let totVant = 0, totIsent = 0, totDesc = 0, spsmVal = 0;
+
+        modal.querySelectorAll('#pdf-modal-fields input[data-key]').forEach(inp => {
+            const key = inp.getAttribute('data-key');
+            const val = parseFloat(inp.value) || 0;
+            const keyLow = key.toLowerCase();
+
+            if (keyLow.includes('spsm') || keyLow.includes('7p44')) spsmVal = val;
+
+            // Descobrir categoria pela cor do input ou pela seção pai
+            const corInput = inp.style.color;
+            if (corInput === 'rgb(52, 211, 153)' || corInput === '#34d399') totVant += val;      // verde = vantagens
+            else if (corInput === 'rgb(248, 113, 113)' || corInput === '#f87171') totDesc += val; // vermelho = descontos
+            else totIsent += val;                                                                  // cinza = isentos
+        });
+
+        const bruto = totVant + totIsent;
+        const deps = parseInt(document.getElementById('inp-deps')?.value) || 0;
+        const deducaoDeps = deps * DEP_VALOR;
+        
+        const baseLegal = Math.max(0, totVant - spsmVal - deducaoDeps);
+        const { irrf: irLegal } = calcularIrrf(baseLegal);
+        
+        const baseSimp = Math.max(0, totVant - DESC_SIMPLIFICADO);
+        const { irrf: irSimp } = calcularIrrf(baseSimp);
+        
+        // Pega o menor imposto (benefício da Receita)
+        let irFinal = Math.min(irLegal, irSimp);
+        let baseUsada = irLegal <= irSimp ? baseLegal : baseSimp;
+
+        // --- Nova Regra 2026 ---
+        if (totVant <= 5000.00) {
+            irFinal = 0;
+        } else if (totVant <= 7350.00) {
+            let desc = 978.62 - (0.133145 * totVant);
+            if (desc > 0) irFinal = Math.max(0, irFinal - desc);
+        }
+
+        const liquido = bruto - totDesc - irFinal;
+
+        const fmt = v => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        const el = id => document.getElementById(id);
+        if (el('mt-vantagens')) el('mt-vantagens').textContent = fmt(bruto);
+        if (el('mt-base'))      el('mt-base').textContent      = fmt(baseUsada);
+        if (el('mt-liquido'))   el('mt-liquido').textContent   = fmt(liquido);
+        if (el('mt-descontos')) el('mt-descontos').textContent = fmt(totDesc);
+        if (el('mt-ir'))        el('mt-ir').textContent        = fmt(irFinal);
+    }
+
+    async function renderPDFPreview() {
+        const pdf = window._pdfDoc;
+        const canvas = document.getElementById('pdf-canvas');
+        if (!pdf || !canvas) return;
+
+        const container = document.getElementById('pdf-preview-scroll');
+        const page = await pdf.getPage(_pdfPage);
+
+        // Se scale=0, fitWidth
+        let scale = _pdfScale;
+        if (scale === 0) {
+            const natural = page.getViewport({ scale: 1 });
+            scale = (container.clientWidth - 24) / natural.width;
+        }
+
+        const viewport = page.getViewport({ scale });
+        canvas.width  = viewport.width;
+        canvas.height = viewport.height;
+        canvas.style.width  = viewport.width + 'px';
+        canvas.style.height = viewport.height + 'px';
+
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        await page.render({ canvasContext: ctx, viewport }).promise;
+
+        // Atualiza rótulos
+        const zoomLabel = document.getElementById('pdf-zoom-label');
+        if (zoomLabel) zoomLabel.textContent = Math.round(scale * 100) + '%';
+        const pageLabel = document.getElementById('pdf-page-label');
+        if (pageLabel) pageLabel.textContent = `${_pdfPage} / ${pdf.numPages}`;
+    }
+
+    function mudarZoomPDF(delta) {
+        if (delta === 0) { _pdfScale = 0; }
+        else { _pdfScale = Math.max(0.3, Math.min(5, (_pdfScale || 1.2) + delta)); }
+        renderPDFPreview();
+    }
+
+    function mudarPaginaPDF(delta) {
+        if (!window._pdfDoc) return;
+        let novaPagina = _pdfPage + delta;
+        if (novaPagina < 1) novaPagina = 1;
+        if (novaPagina > window._pdfDoc.numPages) novaPagina = window._pdfDoc.numPages;
+        if (novaPagina !== _pdfPage) {
+            _pdfPage = novaPagina;
+            renderPDFPreview();
+        }
+    }
+
+    function adicionarRubricaModal(catKey, cor) {
+        const nomeRubrica = prompt('Digite o nome ou código da rubrica (ex: 2048 Auxílio):');
+        if (!nomeRubrica || nomeRubrica.trim() === '') return;
+
+        const valRubricaStr = prompt('Digite o valor em reais (ex: 1500,50 ou 1500.50):', '0.00');
+        if (!valRubricaStr) return;
+
+        let valFormatado = valRubricaStr.replace('R$', '').replace(/\s/g, '');
+        if (valFormatado.includes(',') && valFormatado.includes('.')) {
+            valFormatado = valFormatado.replace(/\./g, '').replace(',', '.');
+        } else if (valFormatado.includes(',')) {
+            valFormatado = valFormatado.replace(',', '.');
+        }
+        
+        const valor = parseFloat(valFormatado) || 0;
+
+        const container = document.getElementById(`modal-sec-${catKey}`);
+        if (!container) return;
+
+        const novoItem = document.createElement('div');
+        novoItem.style.cssText = `display:flex;align-items:center;gap:8px;padding:5px 0;
+                                  border-bottom:1px solid rgba(255,255,255,0.07);animation: fadeIn 0.3s;`;
+        
+        novoItem.innerHTML = `
+            <span style="flex:1;color:#fff;font-size:0.8rem;display:flex;align-items:center;gap:6px;">
+                <span style="color:#f59e0b;font-size:0.7rem;" title="Adicionado manualmente">✨</span>
+                ${nomeRubrica.trim()}
+            </span>
+            <div style="display:flex;align-items:center;gap:3px;">
+                <span style="color:#64748b;font-size:0.75rem;">R$</span>
+                <input type="number" step="0.01" data-key="${nomeRubrica.trim().replace(/"/g, '&quot;')}" data-cat="${catKey}" value="${valor.toFixed(2)}"
+                    style="width:90px;text-align:right;background:rgba(245,158,11,0.15);
+                           border:1px solid rgba(245,158,11,0.3);border-radius:5px;
+                           color:${cor};font-weight:700;font-size:0.85rem;
+                           padding:3px 6px;font-family:monospace;">
+            </div>
+            <button onclick="this.parentElement.remove(); atualizarTotaisModal();" 
+                style="background:none;border:none;color:#f87171;font-size:1.1rem;cursor:pointer;padding:0 5px;" 
+                title="Remover">&times;</button>
+        `;
+
+        container.appendChild(novoItem);
+        
+        // Garante que o painel de totais e os listeners estão ativos (se o PDF estava 100% não detectado antes)
+        if (!document.getElementById('modal-totais')) {
+            // Recriar o painel de totais se ele não existia (PDF vazio) seria mais complexo aqui. 
+            // O comportamento atual é: sempre recalcular. Atualizamos a renderização do pdf-modal-fields num passo prévio.
+        }
+        
+        atualizarTotaisModal();
+    }
+    let _pdfInteractionSetup = false;
+
+    function setupPDFInteraction() {
+        if (_pdfInteractionSetup) return;
+        _pdfInteractionSetup = true;
+
+        const container = document.getElementById('pdf-preview-scroll');
+        if (!container) return;
+
+        container.style.cursor = 'grab';
+        container.style.userSelect = 'none';
+
+        // --- ZOOM com scroll do mouse ---
+        container.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const rect = container.getBoundingClientRect();
+            const ratioX = (e.clientX - rect.left + container.scrollLeft) / container.scrollWidth;
+            const ratioY = (e.clientY - rect.top  + container.scrollTop)  / container.scrollHeight;
+
+            const step = e.deltaY < 0 ? 0.15 : -0.15;
+            _pdfScale = Math.max(0.3, Math.min(5, (_pdfScale || 1.2) + step));
+
+            renderPDFPreview().then(() => {
+                container.scrollLeft = ratioX * container.scrollWidth  - (e.clientX - rect.left);
+                container.scrollTop  = ratioY * container.scrollHeight - (e.clientY - rect.top);
+            });
+        }, { passive: false });
+
+        // --- PAN com clique + arrastar ---
+        let isDragging = false;
+        let dragOrigin = { x: 0, y: 0 };
+        let scrollOrigin = { left: 0, top: 0 };
+
+        container.addEventListener('mousedown', (e) => {
+            if (e.button !== 0) return;
+            isDragging = true;
+            dragOrigin = { x: e.clientX, y: e.clientY };
+            scrollOrigin = { left: container.scrollLeft, top: container.scrollTop };
+            container.style.cursor = 'grabbing';
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            container.scrollLeft = scrollOrigin.left - (e.clientX - dragOrigin.x);
+            container.scrollTop  = scrollOrigin.top  - (e.clientY - dragOrigin.y);
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (!isDragging) return;
+            isDragging = false;
+            const c = document.getElementById('pdf-preview-scroll');
+            if (c) c.style.cursor = 'grab';
+        });
+
+        // Touch pinch-to-zoom
+        let lastTouchDist = null;
+        container.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                lastTouchDist = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+            }
+        }, { passive: true });
+        container.addEventListener('touchmove', (e) => {
+            if (e.touches.length !== 2) return;
+            e.preventDefault();
+            const dist = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+            if (lastTouchDist) {
+                _pdfScale = Math.max(0.3, Math.min(5, (_pdfScale || 1.2) * (dist / lastTouchDist)));
+                renderPDFPreview();
+            }
+            lastTouchDist = dist;
+        }, { passive: false });
+        container.addEventListener('touchend', () => { lastTouchDist = null; });
+    }
+
+    function aplicarDadosPDF() {
+        if (!window._pdfResultado) return;
+        const result = window._pdfResultado;
+
+        // 1. Limpar formulário (preservando a estrutura dos itens fixos)
+        document.querySelectorAll('.fixed-val').forEach(el => el.value = '');
+        
+        // Limpar itens dinâmicos
+        document.getElementById('dyn-vantagens').innerHTML = '';
+        document.getElementById('dyn-isentos').innerHTML = '';
+        document.getElementById('dyn-descontos').innerHTML = '';
+        dynamicItemIds = { 'dyn-vantagens': 0, 'dyn-isentos': 0, 'dyn-descontos': 0 };
+
+        // 2. Coletar os valores que estavam no modal de confirmação (inclui os que o usuário editou ou adicionou)
+        const modal = document.getElementById('pdf-modal');
+        if (!modal) return;
+
+        let novasRubricas = { vantagens: {}, isentos: {}, descontos: {} };
+        modal.querySelectorAll('#pdf-modal-fields input[data-key]').forEach(inp => {
+            const nome = inp.getAttribute('data-key');
+            const cat = inp.getAttribute('data-cat');
+            const val = parseFloat(inp.value);
+            if (!isNaN(val) && cat && novasRubricas[cat]) novasRubricas[cat][nome] = val;
+        });
+
+        // 3. Preencher os dados na tela principal
+        const preencherSecao = (catKey, itensEditados) => {
+            Object.entries(itensEditados).forEach(([nome, val]) => {
+                // Tenta achar com qual rubrica fixa do sistema esse nome bate (pelo código ou nome)
+                const mapEntry = Object.entries(mapaRubricas[catKey]).find(([k, v]) => nome.includes(k) || v.includes(nome) || nome === v);
+                
+                if (mapEntry) {
+                    // O nome fixo (ex: "0003 Soldo") é o valor do mapEntry[1]
+                    const nomeFixo = mapEntry[1]; 
+                    // Tenta achar o input na tela principal
+                    // O data-key é o mesmo nome em dataIniciais que por sua vez bate exatamente com o mapEntry[1]
+                    const el = document.querySelector(`#sec-${catKey} input[data-key="${nomeFixo}"]`);
+                    if (el) {
+                        el.value = val > 0 ? val.toFixed(2) : '';
+                    } else {
+                        // Se por algum motivo não achou o input na tela (não deveria acontecer), vira extra
+                        addDynamicItem(`dyn-${catKey}`, nome, val > 0 ? val.toFixed(2) : '');
+                    }
+                } else {
+                    // É uma rubrica extra/adicionada manualmente que não faz parte das rubricas cadastradas
+                    addDynamicItem(`dyn-${catKey}`, nome, val > 0 ? val.toFixed(2) : '');
+                }
+            });
+        };
+
+        preencherSecao('vantagens', novasRubricas.vantagens);
+        preencherSecao('isentos', novasRubricas.isentos);
+        preencherSecao('descontos', novasRubricas.descontos);
+
+        const vDataMsg = result.ano ? ` Referência: ${result.mes}/${result.ano}` : '';
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+            background:linear-gradient(135deg,#34d399,#10b981);color:white;
+            padding:12px 24px;border-radius:30px;font-size:0.95rem;font-weight:600;
+            box-shadow:0 10px 30px rgba(52,211,153,0.3);z-index:9999;
+            display:flex;align-items:center;gap:8px;
+        `;
+        toast.innerHTML = `<span>✓</span> Formulário Preenchido Automagicamente!${vDataMsg}`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+
+        modal.remove();
+        calcularTudo();
+    }
+
+</script>
+<script>
+    // Chamada direta para garantir inicialização no iOS Safari
+    // (executa logo após o DOM estar pronto, sem depender de eventos)
+    (function() {
+        try {
+            if (typeof init === 'function' && document.getElementById('sel-mes') !== null) {
+                // Só chama se o window.onload ainda não tiver inicializado
+                if (!document.getElementById('sel-mes').options.length) {
+                    init();
+                }
+            }
+        } catch(e) {
+            console.error('init fallback error:', e);
+        }
+    })();
+</script>
+</body>
+</html>
