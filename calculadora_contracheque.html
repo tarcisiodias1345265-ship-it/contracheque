@@ -931,10 +931,10 @@
             "/332 1ª parcela 13° salário": 0
         },
         descontos: {
-            "5017 Empréstimo Comum": 864.43,
+            "5017 Empréstimo Comum": 0,
             "7033 Assistência a Saúde": 326.42,
             "7035 Planserv / Cônjuge": 163.21,
-            "7040 Co-participação Planserv": 30.00,
+            "7040 Co-participação Planserv": 0,
             "7P44 Contribuição SPSM": 595.70
         }
     };
@@ -1901,17 +1901,23 @@
         const hasPdf = !!window._pdfDoc;
         const numPages = hasPdf ? window._pdfDoc.numPages : 0;
 
+        const isMobile = window.innerWidth < 600;
+
         const modal = document.createElement('div');
         modal.id = 'pdf-modal';
         modal.style.cssText = `
             position:fixed;inset:0;z-index:10000;
-            background:rgba(0,0,0,0.8);backdrop-filter:blur(6px);
-            display:flex;align-items:center;justify-content:center;padding:16px;
+            background:rgba(0,0,0,0.85);backdrop-filter:blur(6px);
+            display:flex;align-items:${isMobile ? 'flex-end' : 'center'};justify-content:center;
+            padding:${isMobile ? '0' : '16px'};
         `;
 
         modal.innerHTML = `
-        <div style="background:#1e293b;border:1px solid rgba(255,255,255,0.1);border-radius:16px;
-                    width:100%;max-width:1100px;max-height:93vh;display:flex;flex-direction:column;
+        <div style="background:#1e293b;border:1px solid rgba(255,255,255,0.1);
+                    border-radius:${isMobile ? '16px 16px 0 0' : '16px'};
+                    width:100%;max-width:1100px;
+                    ${isMobile ? 'max-height:92vh;' : 'max-height:93vh;'}
+                    display:flex;flex-direction:column;
                     box-shadow:0 24px 80px rgba(0,0,0,0.6);overflow:hidden;">
 
             <!-- Cabeçalho -->
@@ -1930,11 +1936,13 @@
             </div>
 
             <!-- Corpo: preview + campos -->
-            <div style="display:flex;flex:1;overflow:hidden;min-height:0;">
+            <div style="display:flex;flex:1;overflow:hidden;min-height:0;
+                        flex-direction:${isMobile ? 'column' : 'row'};">
 
-                <!-- Preview do PDF -->
+                <!-- Preview do PDF: acima em mobile, lateral em desktop -->
                 ${hasPdf ? `
-                <div style="display:flex;flex-direction:column;width:55%;border-right:1px solid rgba(255,255,255,0.08);">
+                <div style="display:flex;flex-direction:column;
+                            ${isMobile ? 'height:35vh;width:100%;border-bottom:1px solid rgba(255,255,255,0.08);flex-shrink:0;' : 'width:55%;border-right:1px solid rgba(255,255,255,0.08);'}">
                     <!-- Controles de zoom + página -->
                     <div style="padding:8px 14px;background:rgba(0,0,0,0.2);display:flex;
                                 align-items:center;gap:8px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.06);">
@@ -1968,8 +1976,8 @@
                     </div>
                 </div>` : ''}
 
-                <!-- Campos editáveis -->
-                <div style="${hasPdf ? 'width:45%;' : 'width:100%;'}display:flex;flex-direction:column;">
+                <!-- Campos editáveis: 100% em mobile (empilhado), 45% em desktop com PDF -->
+                <div style="${hasPdf && !isMobile ? 'width:45%;' : 'width:100%;'}display:flex;flex-direction:column;overflow:hidden;">
                     <div style="padding:12px 16px;background:rgba(0,0,0,0.15);flex-shrink:0;
                                 border-bottom:1px solid rgba(255,255,255,0.06);">
                         <span style="color:#fbbf24;font-size:0.78rem;">✏️ Edite os valores se preciso antes de confirmar</span>
@@ -1985,28 +1993,30 @@
                         buildSection('Descontos', '#f87171', 'descontos', encontrados.descontos)}
                     </div>
                     <!-- Painel de totais em tempo real -->
-                    ${total > 0 ? `<div id="modal-totais" style="padding:12px 16px;background:rgba(0,0,0,0.25);
+                    ${total > 0 ? `<div id="modal-totais" style="padding:10px 14px;background:rgba(0,0,0,0.25);
                                 border-top:1px solid rgba(255,255,255,0.08);flex-shrink:0;">
-                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+                        <div style="display:grid;grid-template-columns:${isMobile ? '1fr 1fr' : '1fr 1fr 1fr'};gap:6px;">
                             <div style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);
-                                        border-radius:8px;padding:8px 10px;text-align:center;">
-                                <div style="color:#94a3b8;font-size:0.65rem;text-transform:uppercase;margin-bottom:3px;">Total Vantagens</div>
-                                <div id="mt-vantagens" style="color:#34d399;font-weight:800;font-size:0.95rem;font-family:monospace;">R$ 0,00</div>
+                                        border-radius:8px;padding:6px 8px;text-align:center;">
+                                <div style="color:#94a3b8;font-size:0.6rem;text-transform:uppercase;margin-bottom:2px;">Vantagens</div>
+                                <div id="mt-vantagens" style="color:#34d399;font-weight:800;font-size:0.88rem;font-family:monospace;">R$ 0,00</div>
                             </div>
                             <div style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);
-                                        border-radius:8px;padding:8px 10px;text-align:center;">
-                                <div style="color:#94a3b8;font-size:0.65rem;text-transform:uppercase;margin-bottom:3px;">Base IR</div>
-                                <div id="mt-base" style="color:#818cf8;font-weight:800;font-size:0.95rem;font-family:monospace;">R$ 0,00</div>
+                                        border-radius:8px;padding:6px 8px;text-align:center;">
+                                <div style="color:#94a3b8;font-size:0.6rem;text-transform:uppercase;margin-bottom:2px;">Base IR</div>
+                                <div id="mt-base" style="color:#818cf8;font-weight:800;font-size:0.88rem;font-family:monospace;">R$ 0,00</div>
                             </div>
+                            ${isMobile ? '' : `
                             <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
-                                        border-radius:8px;padding:8px 10px;text-align:center;">
-                                <div style="color:#94a3b8;font-size:0.65rem;text-transform:uppercase;margin-bottom:3px;">Líquido Estimado</div>
-                                <div id="mt-liquido" style="color:white;font-weight:800;font-size:0.95rem;font-family:monospace;">R$ 0,00</div>
-                            </div>
+                                        border-radius:8px;padding:6px 8px;text-align:center;">
+                                <div style="color:#94a3b8;font-size:0.6rem;text-transform:uppercase;margin-bottom:2px;">Líquido</div>
+                                <div id="mt-liquido" style="color:white;font-weight:800;font-size:0.88rem;font-family:monospace;">R$ 0,00</div>
+                            </div>`}
                         </div>
-                        <div style="margin-top:6px;display:flex;gap:16px;justify-content:center;">
-                            <span style="color:#64748b;font-size:0.7rem;">Desc: <span id="mt-descontos" style="color:#f87171;">R$ 0,00</span></span>
-                            <span style="color:#64748b;font-size:0.7rem;">IR est.: <span id="mt-ir" style="color:#fb923c;">R$ 0,00</span></span>
+                        <div style="margin-top:5px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                            ${isMobile ? `<div id="mt-liquido" style="color:white;font-weight:800;font-size:0.85rem;font-family:monospace;">Líq: R$ 0,00</div>` : ''}
+                            <span style="color:#64748b;font-size:0.68rem;">Desc: <span id="mt-descontos" style="color:#f87171;">R$ 0,00</span></span>
+                            <span style="color:#64748b;font-size:0.68rem;">IR est.: <span id="mt-ir" style="color:#fb923c;">R$ 0,00</span></span>
                         </div>
                     </div>` : ''}
                     <div style="padding:14px 16px;border-top:1px solid rgba(255,255,255,0.08);
@@ -2375,3 +2385,4 @@
 </script>
 </body>
 </html>
+
