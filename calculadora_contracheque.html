@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contracheque PM/BM - SD BM TARCÍSIO</title>
+    <title>Contracheque PM/BM - SD BM</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -1952,8 +1952,15 @@
                         <button onclick="
                             var c=document.getElementById('pdf-canvas-wrap');
                             var btn=this;
-                            if(c.style.display==='none'){c.style.display='block';btn.textContent='▲ Ocultar PDF';}
-                            else{c.style.display='none';btn.textContent='▼ Ver PDF';}
+                            if(c.style.display==='none'){
+                                c.style.display='block';
+                                c.style.height='42vh';
+                                btn.textContent='▲ Ocultar PDF';
+                                if(window._pdfDoc) renderPDFPreview();
+                            } else {
+                                c.style.display='none';
+                                btn.textContent='▼ Ver PDF';
+                            }
                         " style="background:rgba(99,102,241,0.2);color:#818cf8;border:1px solid rgba(99,102,241,0.3);
                                padding:5px 12px;border-radius:6px;cursor:pointer;font-size:0.78rem;font-weight:700;">
                             ▼ Ver PDF
@@ -1980,8 +1987,8 @@
                             style="background:rgba(255,255,255,0.07);color:white;border:none;
                                    padding:5px 10px;border-radius:6px;cursor:pointer;">▶</button>` : ''}
                     </div>
-                    <!-- Canvas: oculto por padrão no mobile -->
-                    <div id="pdf-canvas-wrap" style="${isMobile ? 'display:none;' : 'flex:1;'}overflow:auto;background:#525659;padding:12px;">
+                    <!-- Canvas: oculto por padrão no mobile, com scroll nativo iOS -->
+                    <div id="pdf-canvas-wrap" style="${isMobile ? 'display:none;height:42vh;' : 'flex:1;'}overflow:auto;-webkit-overflow-scrolling:touch;overflow-y:scroll;overflow-x:auto;background:#525659;padding:12px;">
                         <canvas id="pdf-canvas" style="box-shadow:0 4px 20px rgba(0,0,0,0.5);display:block;margin:0 auto;"></canvas>
                     </div>
                 </div>` : ''}
@@ -2233,7 +2240,10 @@
         const container = document.getElementById('pdf-canvas-wrap');
         if (!container) return;
 
-        container.style.cursor = 'grab';
+        const isTouchDevice = ('ontouchstart' in window);
+        if (!isTouchDevice) {
+            container.style.cursor = 'grab';
+        }
         container.style.userSelect = 'none';
 
         // --- ZOOM com scroll do mouse ---
@@ -2252,7 +2262,8 @@
             });
         }, { passive: false });
 
-        // --- PAN com clique + arrastar ---
+        // --- PAN com clique + arrastar (apenas em desktop, não touch) ---
+        if (!isTouchDevice) {
         let isDragging = false;
         let dragOrigin = { x: 0, y: 0 };
         let scrollOrigin = { left: 0, top: 0 };
@@ -2275,11 +2286,11 @@
         document.addEventListener('mouseup', () => {
             if (!isDragging) return;
             isDragging = false;
-            const c = document.getElementById('pdf-preview-scroll');
-            if (c) c.style.cursor = 'grab';
+            container.style.cursor = 'grab';
         });
+        } // end !isTouchDevice
 
-        // Touch pinch-to-zoom
+        // Touch pinch-to-zoom (2 dedos = zoom, 1 dedo = scroll nativo iOS)
         let lastTouchDist = null;
         container.addEventListener('touchstart', (e) => {
             if (e.touches.length === 2) {
@@ -2287,19 +2298,19 @@
                     e.touches[0].clientX - e.touches[1].clientX,
                     e.touches[0].clientY - e.touches[1].clientY
                 );
+            } else {
+                lastTouchDist = null; // 1 dedo: scroll nativo, não interferir
             }
         }, { passive: true });
         container.addEventListener('touchmove', (e) => {
-            if (e.touches.length !== 2) return;
-            e.preventDefault();
+            if (e.touches.length !== 2 || !lastTouchDist) return; // 1 dedo: scroll normal
+            e.preventDefault(); // Só bloqueia scroll no pinch
             const dist = Math.hypot(
                 e.touches[0].clientX - e.touches[1].clientX,
                 e.touches[0].clientY - e.touches[1].clientY
             );
-            if (lastTouchDist) {
-                _pdfScale = Math.max(0.3, Math.min(5, (_pdfScale || 1.2) * (dist / lastTouchDist)));
-                renderPDFPreview();
-            }
+            _pdfScale = Math.max(0.3, Math.min(5, (_pdfScale || 1.2) * (dist / lastTouchDist)));
+            renderPDFPreview();
             lastTouchDist = dist;
         }, { passive: false });
         container.addEventListener('touchend', () => { lastTouchDist = null; });
